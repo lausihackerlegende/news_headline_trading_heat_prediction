@@ -7,7 +7,12 @@ authors = [
     { name = "Laurenz Hammacher", email = "users.noreply.github.com" }
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "matplotlib>=3.11.2",
+    "numpy>=2.5.4",
+    "pandas>=3.0.6",
+    "seaborn>=0.13.2",
+]
 
 [project.scripts]
 headline-heat = "headline_heat:main"
@@ -15,3 +20,10 @@ headline-heat = "headline_heat:main"
 [build-system]
 requires = ["uv_build>=0.12.23,<0.13.0"]
 build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ipdb>=0.13.13",
+    "ipykernel>=7.4.0",
+    "ipython>=9.17.1",
+]
