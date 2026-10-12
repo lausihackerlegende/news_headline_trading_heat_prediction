@@ -147,7 +147,8 @@ To elevate this project to production-grade quantitative finance standards, futu
 ---
 
 ## 👥 Team & Credits
-- **Laurenz Hammacher** & Team (Le Wagon Data Science, Batch #2361, October 2026)
+- **Laurenz Hammacher**: Le Wagon Data Science, Batch #2361, October 2026
+- **Stanislav Korolev**: Le Wagon Data Science, Batch #2361, October 2026
 - **Dataset**: FNSPID (Dong et al., 2024)
 
 *Disclaimer: This project is for educational and portfolio purposes only. It does not constitute financial advice. Do not use this model for real-world trading.*
