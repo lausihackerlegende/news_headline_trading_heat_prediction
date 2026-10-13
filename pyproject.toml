@@ -11,6 +11,7 @@ dependencies = [
     "matplotlib>=3.11.2",
     "numpy>=2.5.4",
     "pandas>=3.0.6",
+    "pyarrow>=26.0.0",
     "seaborn>=0.13.2",
 ]
 
@@ -26,4 +27,5 @@ dev = [
     "ipdb>=0.13.13",
     "ipykernel>=7.4.0",
     "ipython>=9.17.1",
+    "pyarrow>=26.0.0",
 ]
