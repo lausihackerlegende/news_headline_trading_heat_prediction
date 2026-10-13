@@ -1,5 +1,5 @@
 [project]
-name = "headline-heat"
+name = "news_headline_trading_heat_prediction"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -16,7 +16,7 @@ dependencies = [
 ]
 
 [project.scripts]
-headline-heat = "headline_heat:main"
+news_headline_trading_heat_prediction = "news_headline_trading_heat_prediction:main"
 
 [build-system]
 requires = ["uv_build>=0.12.23,<0.13.0"]
