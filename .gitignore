@@ -23,6 +23,7 @@ wheels/
 
 # Raw data
 data/
+raw_data/
 *.csv
 *.sqlite
 *.zip
