@@ -35,5 +35,6 @@ dev = [
     "ipython>=9.17.1",
     "pyarrow>=26.0.0",
     "requests>=2.34.2",
+    "spacy>=3.8.16",
     "yfinance>=1.7.0",
 ]
