@@ -5,13 +5,16 @@ import os
 
 import pandas as pd
 from fastapi import FastAPI
+from src.news_headline_trading_heat_prediction.predict import load_model, predict
+from src.news_headline_trading_heat_prediction.pipeline import cleaning
 
+MODEL_PATH ='models/lin_svc_pipeline.joblib'
+#MODEL_PATH ='models/best_recall_model_logistic_regression.joblib'
 
 
 # FastAPI instance
 app = FastAPI()
-
-
+app.state.model = load_model(MODEL_PATH)
 
 # Root endpoint
 @app.get("/")
@@ -29,8 +32,12 @@ def dummy(number: int):
 
 # predict endpoint
 @app.get("/predict")
-def predict(headline: str):
+def predict_weather(headline: str):
+    headline = cleaning(headline)
 
-    prediction = "It's going to be hot. Maybe. Or maybe cold. You never know"
+    prediction = predict(app.state.model, headline)
+    print(prediction)
+    print(type(prediction[0]))
+    #"It's going to be hot. Maybe. Or maybe cold. You never know"
 
-    return prediction
+    return {'prediction': float(prediction[0])}
