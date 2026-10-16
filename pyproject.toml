@@ -38,5 +38,6 @@ dev = [
     "pyarrow>=26.0.0",
     "requests>=2.34.2",
     "spacy>=3.8.16",
+    "torch>=2.14.1",
     "yfinance>=1.7.0",
 ]
