@@ -9,6 +9,7 @@ authors = [
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.143.2",
+    "keras>=3.15.1",
     "matplotlib>=3.11.2",
     "nltk>=3.10.3",
     "numpy>=2.5.4",
@@ -17,7 +18,7 @@ dependencies = [
     "pyarrow>=26.0.0",
     "scikit-learn>=1.9.1",
     "seaborn>=0.13.2",
-    "transformers>=5.20.0",
+    "tensorflow>=2.21.0",
     "uvicorn>=0.54.0",
     "xgboost>=3.4.1",
 ]
