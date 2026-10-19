@@ -14,11 +14,13 @@ dependencies = [
     "nltk>=3.10.3",
     "numpy>=2.5.4",
     "pandas>=3.0.6",
+    "polars>=2.0.0",
     "pyarrow>=26.0.0",
     "scikit-learn>=1.9.1",
     "seaborn>=0.13.2",
     "tensorflow>=2.21.0",
     "uvicorn>=0.54.0",
+    "xgboost>=3.4.1",
 ]
 
 [project.scripts]
@@ -36,5 +38,7 @@ dev = [
     "ipython>=9.17.1",
     "pyarrow>=26.0.0",
     "requests>=2.34.2",
+    "spacy>=3.8.16",
+    "torch>=2.14.1",
     "yfinance>=1.7.0",
 ]
