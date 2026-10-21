@@ -1,7 +1,7 @@
 #======================#
 # Install, clean, test #
 #======================#
-
+include .env
 install_requirements:
 	@pip install -r requirements.txt
 
