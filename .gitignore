@@ -57,3 +57,4 @@ secrets.toml
 notebooks/
 processed_data/
 headline_pipeline/
+results/
