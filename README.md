@@ -58,7 +58,7 @@ Built on the **FNSPID (Financial News and Stock Price Integration Dataset)** (Do
 ### 2. Deep Learning Model (`FinBERT-tone`)
 - Fine-tuned `yiyanghkust/finbert-tone` using inverse class-weighted cross-entropy loss on 200,000 stratified financial samples (`models/finbert_tone_heat_best.zip`).
 - **Probability Aggregation**:
-  $$P(\text{Hot}) = P(\text{hot\_rising}) + P(\text{hot\_falling})$$
+  $$P(\text{Hot}) = P(\text{hot rising}) + P(\text{hot falling})$$
 - **Decision Rule**: A day is classified as **Hot** strictly if the aggregated hot probability exceeds the cold probability: $P(\text{Hot}) > P(\text{Cold})$.
 
 ---
