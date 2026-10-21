@@ -1,6 +1,6 @@
 FROM python:3.12-trixie
 
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.12.24 /uv /uvx /bin/
 
 WORKDIR /app
 
@@ -14,7 +14,8 @@ COPY models models
 ENV UV_NO_DEV=1 \
     UV_FROZEN=1
 
-RUN uv sync
+
 RUN uv run python -c "import nltk; nltk.download('punkt_tab')"
+RUN uv sync
 
 CMD ["uv", "run", "uvicorn", "api.fast:app", "--host", "0.0.0.0", "--port", "8080"]
