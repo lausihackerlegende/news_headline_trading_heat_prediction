@@ -29,7 +29,7 @@ A quantitative machine learning system that predicts whether a stock will experi
 
 ## 🎯 About the Project
 Predicting directional asset price returns from news is notoriously noisy. This project reframes financial news analysis as an anomaly volatility classification problem: predicting whether a stock's daily price move will be greater than the 20-day rolling standard deviation of daily percentage returns for each asset.
-2. **Hot Threshold**: A trading day is labeled **"Hot"** if absolute daily return exceeds **1.5×** its usual move.
+2. **Hot Threshold**: A trading day is labeled **"Hot"** if absolute daily return **exceeds** its usual move and volume **exceeds** 20-day average volume.
 3. **Cold**: All trading days within normal bounds are labeled **"Cold"**.
 
 ---
@@ -44,7 +44,7 @@ Built on the **FNSPID (Financial News and Stock Price Integration Dataset)** (Do
 
 ## ⚡ The Mechanism: Hot vs. Cold
 1. **Usual Move**: 20-day rolling standard deviation of daily percentage returns for each asset.
-2. **Hot Threshold**: A trading day is labeled "Hot" if absolute daily return exceeds its usual move.
+2. **Hot Threshold**: A trading day is labeled "Hot" if absolute daily return **exceeds** its usual move and volume **exceeds** 20-day average volume.
 3. **Cold**: All trading days within normal bounds are labeled "Cold".
 
 ---
