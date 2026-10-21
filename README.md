@@ -28,12 +28,7 @@ A quantitative machine learning system that predicts whether a stock will experi
 ---
 
 ## 🎯 About the Project
-Predicting directional asset price returns from news is notoriously noisy. This project reframes financial news analysis as an anomaly volatility classification problem: predicting whether a stock's daily price move will significantly exceed its historical baseline (**"Hot"**) or trade within standard bands (**"Cold"**).
-
----
-
-## ⚡ The Mechanism: Hot vs. Cold
-1. **Usual Move**: 252-day rolling standard deviation of daily percentage returns for each asset.
+Predicting directional asset price returns from news is notoriously noisy. This project reframes financial news analysis as an anomaly volatility classification problem: predicting whether a stock's daily price move will be greater than the 20-day rolling standard deviation of daily percentage returns for each asset.
 2. **Hot Threshold**: A trading day is labeled **"Hot"** if absolute daily return exceeds **1.5×** its usual move.
 3. **Cold**: All trading days within normal bounds are labeled **"Cold"**.
 
@@ -43,7 +38,14 @@ Predicting directional asset price returns from news is notoriously noisy. This 
 Built on the **FNSPID (Financial News and Stock Price Integration Dataset)** (Dong et al., 2024):
 - **Scale**: Filtered subset of ~2.1M stock-days (`weather_all_stocks_master_dataset.parquet`).
 - **Features (`X`)**: Headline (`news_title`) paired with 3-sentence TextRank summaries (`summary_3_sentences`).
-- **Targets (`y`)**: 3-Class directional labels (`cold`, `hot_rising`, `hot_falling`) mapped to binary volatility states (`hot` vs `cold`).
+- **Targets (`y`)**: 3-Class directional labels (`cold`, `hot_rising`, `hot_falling`) mapped to binary volatility states (`hot` vs `cold`). significantly exceed its historical baseline (**"Hot"**) or trade within standard bands (**"Cold"**).
+
+---
+
+## ⚡ The Mechanism: Hot vs. Cold
+1. **Usual Move**: 20-day rolling standard deviation of daily percentage returns for each asset.
+2. **Hot Threshold**: A trading day is labeled "Hot" if absolute daily return exceeds its usual move.
+3. **Cold**: All trading days within normal bounds are labeled "Cold".
 
 ---
 
