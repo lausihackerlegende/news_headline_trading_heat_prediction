@@ -23,8 +23,8 @@ app = FastAPI(
     version="2.0.0",
 )
 app.state.baseline_model = load_model(MODEL_PATH) if os.path.exists(MODEL_PATH) else None
-app.state.model_0_5 = load_model(MODEL_PATH_0_5)
-app.state.model_0_2 = load_model(MODEL_PATH_0_2)
+app.state.model_0_5 = load_model(MODEL_PATH_0_5) if os.path.exists(MODEL_PATH_0_5) else None
+app.state.model_0_2 = load_model(MODEL_PATH_0_2) if os.path.exists(MODEL_PATH_0_2) else None
 app.state.dl_bundle = load_dl_model(DL_MODEL_PATH) if os.path.exists(DL_MODEL_PATH) else None
 
 
