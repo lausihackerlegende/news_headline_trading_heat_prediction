@@ -55,7 +55,7 @@ docker_run_local:
 
 docker_run_local_interactively:
 	docker run -it \
-		-e PORT=8000 -p $(DOCKER_LOCAL_PORT):8000 \
+		-e PORT=8080 -p $(DOCKER_LOCAL_PORT):8080 \
 		--env-file .env \
 		$(DOCKER_IMAGE_NAME):local \
 		bash
