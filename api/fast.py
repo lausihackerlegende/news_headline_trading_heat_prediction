@@ -11,10 +11,10 @@ from src.news_headline_trading_heat_prediction.pipeline import cleaning
 from src.news_headline_trading_heat_prediction.dl_predict import DL_MODEL_PATH, dl_predict, load_dl_model
 
 
-MODEL_PATH ='models/lin_svc_pipeline.joblib'
+MODEL_PATH = 'models/lin_svc_pipeline.joblib'
 MODEL_PATH_0_5 = 'models/lin_svc_pipeline_std_0_5.joblib'
 MODEL_PATH_0_2 = 'models/lin_svc_pipeline_std_0_2.joblib'
-#MODEL_PATH ='models/best_recall_model_logistic_regression.joblib'
+MODEL_PATH_it_13_w2v ='models/best_lstm_it13_w2v_frozen.joblib'
 
 
 # FastAPI instance
@@ -52,8 +52,14 @@ def dummy(number: int):
 
 # predict endpoint
 @app.get("/predict")
-def predict_weather(headline: str, model_choice: float):
-    headline = cleaning(headline)
+def predict_weather(headline: str, model_choice: int):
+    lin_svm_model_range = [1, 5, 2]
+    dl_model_range = [7, 8, 9]
+
+    if model_choice in lin_svm_model_range:
+        headline = cleaning(headline)
+    elif model_choice in dl_model_range:
+        headline = dl_preprocess(headline)
 
     if model_choice == 1:
         prediction = predict(app.state.baseline_model, headline)
@@ -63,6 +69,8 @@ def predict_weather(headline: str, model_choice: float):
         prediction = predict(app.state.model_0_2, headline)
 
 
+    elif model_choice == 7:
+        prediction = predict(app.state.model_it_13_w2v, headline)
 
     #print(prediction)
     #print(type(prediction[0]))

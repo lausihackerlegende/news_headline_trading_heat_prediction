@@ -2,6 +2,7 @@ import pandas as pd
 import string
 from nltk.tokenize import word_tokenize
 
+# Preprocess a string of headlines for ML models
 def cleaning(headlines):
 
     headlines = headlines.strip()
@@ -15,3 +16,9 @@ def cleaning(headlines):
     #lemmatized = [WordNetLemmatizer().lemmatize(word, pos="v") for word in tokens]
     cleaned_headlines = ' '.join(word for word in tokens)
     return cleaned_headlines
+
+
+# Preprocess a string of headlines for DL models
+def dl_preprocess(headlines):
+
+    headlines = headlines
