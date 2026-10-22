@@ -11,6 +11,7 @@ import keras
 import numpy as np
 import torch
 from transformers import BertForSequenceClassification, BertTokenizer
+from src.news_headline_trading_heat_prediction.pipeline import dl_preprocess
 
 DL_MODEL_PATH = "models/finbert_tone_heat_best.zip"
 LSTM_MODEL_PATH = "models/best_lstm_it13_w2v_frozen.keras"
@@ -84,7 +85,8 @@ def load_lstm_model(model_path: str = LSTM_MODEL_PATH, tokenizer_path: str = LST
 
 def lstm_predict(lstm_bundle: dict, headline: str) -> dict:
     tokenizer, model, max_len = lstm_bundle["tokenizer"], lstm_bundle["model"], lstm_bundle["max_len"]
-    sequences = tokenizer.texts_to_sequences([headline.strip().lower()])
+    cleaned_text = dl_preprocess(headline)
+    sequences = tokenizer.texts_to_sequences(cleaned_text)
     padded = keras.utils.pad_sequences(sequences, maxlen=max_len, padding="post", truncating="post")
 
     raw_preds = np.asarray(model.predict(padded, verbose=0))

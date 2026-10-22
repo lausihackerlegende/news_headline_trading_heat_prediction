@@ -58,4 +58,5 @@ notebooks/
 processed_data/
 headline_pipeline/
 results/
-uv.lock
+
+*.keras
