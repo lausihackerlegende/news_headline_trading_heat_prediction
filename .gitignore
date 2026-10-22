@@ -55,4 +55,7 @@ secrets.toml
 # Complete to your desire
 
 notebooks/
+processed_data/
+headline_pipeline/
+results/
 uv.lock
