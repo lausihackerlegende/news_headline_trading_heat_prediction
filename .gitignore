@@ -8,6 +8,7 @@ wheels/
 .coverage
 .ipynb_checkpoints
 **/__pycache__/
+.python-version
 *.pyc
 **/build
 
@@ -20,9 +21,8 @@ wheels/
 # Ignore VS Code generated files
 *.vscode
 
-# Raw data
+# (Raw) data
 data/
-raw_data/
 *.csv
 *.sqlite
 *.zip
@@ -57,3 +57,5 @@ secrets.toml
 notebooks/
 processed_data/
 headline_pipeline/
+results/
+uv.lock
