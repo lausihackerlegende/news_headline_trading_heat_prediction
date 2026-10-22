@@ -1,190 +1,208 @@
 # 🌤️ Stock Market Weather: News-Driven Heat Prediction
 
-[![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/)
+[![Python](https://img.shields.io/badge/Python-3.12-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688.svg)](https://fastapi.tiangolo.com/)
+[![Hugging Face](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-FinBERT--tone-yellow.svg)](https://huggingface.co/yiyanghkust/finbert-tone)
+[![Docker](https://img.shields.io/badge/Docker-Enabled-2496ED.svg)](https://www.docker.com/)
+[![Google Cloud Run](https://img.shields.io/badge/GCP-Cloud%20Run-4285F4.svg)](https://cloud.google.com/run)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Le Wagon](https://img.shields.io/badge/Le%20Wagon-Data%20Science%20Batch%20%232361-orange.svg)](https://www.lewagon.com/)
 [![uv](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/uv/main/assets/badge/v0.json)](https://github.com/astral-sh/uv)
 
-A machine learning project that predicts whether a tech stock will have a **"Hot"** (highly volatile) or **"Cold"** (normal) trading day based on aggregated daily news headlines. Built during the Le Wagon Data Science Bootcamp (Batch #2361).
+A quantitative machine learning system that predicts whether a stock will experience a **"Hot"** (abnormally volatile) or **"Cold"** (normal) trading day based on financial news headlines and text summaries. Developed during the Le Wagon Data Science Bootcamp (Batch #2361) and served via FastAPI containerized on Google Cloud Run.
 
 ---
 
 ## 📑 Table of Contents
-- [About the Project](#about-the-project)
-- [The Mechanism: Hot vs. Cold](#the-mechanism-hot-vs-cold)
-- [Dataset](#dataset)
-- [Modeling Approach](#modeling-approach)
-- [Project Structure](#project-structure)
-- [Installation & Setup](#installation--setup)
-- [Usage](#usage)
-- [Evaluation Metrics](#evaluation-metrics)
-- [Future Roadmap](#future-roadmap)
-- [Team](#team)
-- [Credits](#credits)
+- [About the Project](#-about-the-project)
+- [The Mechanism: Hot vs. Cold](#-the-mechanism-hot-vs-cold)
+- [Dataset](#-dataset)
+- [Modeling Architecture](#-modeling-architecture)
+- [Project Structure](#-project-structure)
+- [Installation & Setup](#-installation--setup)
+- [API Usage](#-api-usage)
+- [Docker & GCP Cloud Run Deployment](#-docker--gcp-cloud-run-deployment)
+- [Evaluation Performance](#-evaluation-performance)
+- [Team & Credits](#-team--credits)
 
 ---
 
 ## 🎯 About the Project
-Can news headlines tell us if a stock is about to make an unusual move?
-
-This project analyzes the relationship between financial news and stock price volatility. Instead of predicting exact price movements (which is notoriously noisy), we frame the problem as a binary classification task: predicting if a stock's daily price move will be significantly larger than its historical baseline ("Hot") or within normal parameters ("Cold").
-
----
-
-## ️ The Mechanism: Hot vs. Cold
-We define a "Hot" day dynamically for each stock:
-1. **Usual Move**: Calculated as the standard deviation of the stock's daily percentage returns over the past 252 trading days (1 year).
-2. **Hot Threshold**: A day is labeled **"Hot"** if the absolute daily price move is **> 1.5×** the usual move.
-3. **Cold**: Everything else is labeled **"Cold"**.
-
-*Example*: If Apple's (AAPL) usual daily move is 1.5%, and it moves 5.0% on a given day, that is 3.3× the usual move → **Hot**.
+Predicting directional asset price returns from news is notoriously noisy. This project reframes financial news analysis as an anomaly volatility classification problem: predicting whether a stock's daily price move will be greater than the 20-day rolling standard deviation of daily percentage returns for each asset.
+2. **Hot Threshold**: A trading day is labeled **"Hot"** if absolute daily return **exceeds** its usual move and volume **exceeds** 20-day average volume.
+3. **Cold**: All trading days within normal bounds are labeled **"Cold"**.
 
 ---
 
 ## 📊 Dataset
-We use the **FNSPID (Financial News and Stock Price Integration Dataset)** (Dong et al., 2024).
-- **Scope**: 15.7M news records, 4,775 companies (1999–2023).
-- **Our Focus**: A filtered subset of NASDAQ-100 stocks for the year 2023.
-- **Features (`X`)**: Aggregated daily news headlines and 3-sentence summaries (TextRank) joined by ticker and date.
-- **Target (`y`)**: Binary label (`Hot` or `Cold`) based on the adjusted close price movement.
-
-*Source*: [FNSPID on Hugging Face](https://huggingface.co/datasets/Zihan1004/FNSPID) | [arXiv Paper 2402.06698](https://arxiv.org/abs/2402.06698)
+Built on the **FNSPID (Financial News and Stock Price Integration Dataset)** (Dong et al., 2024):
+- **Scale**: Filtered subset of ~2.1M stock-days (`weather_all_stocks_master_dataset.parquet`).
+- **Features (`X`)**: Headline (`news_title`) paired with 3-sentence TextRank summaries (`summary_3_sentences`).
+- **Targets (`y`)**: 3-Class directional labels (`cold`, `hot_rising`, `hot_falling`) mapped to binary volatility states (`hot` vs `cold`). significantly exceed its historical baseline (**"Hot"**) or trade within standard bands (**"Cold"**).
 
 ---
 
-## 🧠 Modeling Approach
-The project is developed in two progressive stages:
+## ⚡ The Mechanism: Hot vs. Cold
+1. **Usual Move**: 20-day rolling standard deviation of daily percentage returns for each asset.
+2. **Hot Threshold**: A trading day is labeled "Hot" if absolute daily return **exceeds** its usual move and volume **exceeds** 20-day average volume.
+3. **Cold**: All trading days within normal bounds are labeled "Cold".
 
-### Stage 1: Baseline (Week 1)
-- **Text Processing**: TF-IDF (Term Frequency–Inverse Document Frequency) to score distinctive words in aggregated daily headlines.
-- **Model**: Naive Bayes Classifier.
-- **Goal**: Establish a baseline to learn which keywords or phrases correlate with volatile days.
+---
 
-### Stage 2: Deep Learning Stretch Goal (Week 2)
-- **Text Processing**: Word Embeddings (e.g., Word2Vec or pre-trained financial embeddings).
-- **Model**: Long Short-Term Memory (LSTM) network.
-- **Goal**: Capture word order and context to not only predict "Hot" but also the direction ("Hot & Rising" vs. "Hot & Falling"). *E.g., "Apple beats expectations" vs. "Apple misses expectations".*
+## 🧠 Modeling Architecture
+
+### 1. Baseline Model (`LinearSVC`)
+- Custom NLTK tokenization pipeline and TF-IDF representation.
+- Fast, interpretable linear decision boundary for initial filtering (`models/lin_svc_pipeline.joblib`).
+
+### 2. Deep Learning Model (`FinBERT-tone`)
+- Fine-tuned `yiyanghkust/finbert-tone` using inverse class-weighted cross-entropy loss on 200,000 stratified financial samples (`models/finbert_tone_heat_best.zip`).
+- **Probability Aggregation**:
+  $$P(\text{Hot}) = P(\text{hot rising}) + P(\text{hot falling})$$
+- **Decision Rule**: A day is classified as **Hot** strictly if the aggregated hot probability exceeds the cold probability: $P(\text{Hot}) > P(\text{Cold})$.
 
 ---
 
 ## 📁 Project Structure
 ```text
 news_headline_trading_heat_prediction/
+├── api/
+│   └── fast.py                           # FastAPI application exposing /predict and /dl_predict
+├── data/
+│   └── processed/                        # Parquet datasets
+├── models/
+│   ├── lin_svc_pipeline.joblib           # Baseline TF-IDF + LinearSVC model
+│   └── finbert_tone_heat_best.zip        # Fine-tuned FinBERT-tone weights
 ├── notebooks/
-│   └── fnspid-dataset-extraction.ipynb   # Dataset filtering and preprocessing
-├── raw_data/
-│   ├── nasdaq100_news_2023.parquet       # Filtered NASDAQ-100 news (2023)
-│   └── nasdaq100_news_2023.csv.gz        # Compressed CSV version
+│   └── DL_model_evaluation.ipynb         # Stratified out-of-sample evaluation
 ├── src/
-│   └── headline_heat/
+│   └── news_headline_trading_heat_prediction/
 │       ├── __init__.py
-│       ├── data_processing.py            # Data loading and feature engineering
-│       ├── features.py                   # TF-IDF and embedding pipelines
-│       └── train.py                      # Model training and evaluation
-├── pyproject.toml                        # Project metadata and dependencies (uv)
+│       ├── pipeline.py                   # NLTK text processing
+│       ├── predict.py                    # Baseline LinearSVC inference
+│       └── dl_predict.py                 # FinBERT inference and aggregation
+├── Dockerfile                            # Optimized container recipe for Cloud Run
+├── Makefile                              # Automation for local runs, builds, and GCP deploys
+├── pyproject.toml                        # Project dependencies managed via uv
 ├── uv.lock                               # Locked dependency versions
-── README.md
+└── README.md
 ```
 
 ---
 
-## ️ Installation & Setup
+## 🛠️ Installation & Setup
 
-This project uses **[uv](https://github.com/astral-sh/uv)** for fast, reliable Python package management.
-
-### Prerequisites
-- Python 3.9 or higher
-- [uv](https://github.com/astral-sh/uv) installed
-
-### Quick Start
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/lausihackerlegende/news_headline_trading_heat_prediction.git
-   cd news_headline_trading_heat_prediction
-   ```
-
-2. **Create virtual environment and install dependencies with uv**:
-   ```bash
-   uv venv
-   source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-   uv pip install -e .
-   ```
-
-   Or simply use:
-   ```bash
-   uv sync
-   ```
-
-3. **Data Preparation**:
-   The pre-filtered NASDAQ-100 dataset for 2023 is already included in `raw_data/`.
-
-   To extract your own subset from the full FNSPID dataset, run the notebook:
-   ```bash
-   jupyter notebook notebooks/fnspid-dataset-extraction.ipynb
-   ```
-
----
-
-##  Usage
-
-### Train the Baseline Model
 ```bash
-python src/headline_heat/train.py --model naive_bayes
-```
+# 1. Clone repository
+git clone https://github.com/lausihackerlegende/news_headline_trading_heat_prediction.git
+cd news_headline_trading_heat_prediction
 
-### Run Data Exploration
-```bash
-jupyter notebook notebooks/fnspid-dataset-extraction.ipynb
-```
-
-### Interactive Demo (Coming Soon)
-We plan to build a Streamlit app to demonstrate the model. Paste a stock's recent headlines to get a real-time "Hot" or "Cold" prediction with probability scores.
-```bash
-streamlit run app/streamlit_app.py
+# 2. Install dependencies with uv
+uv sync
+uv run python -c "import nltk; nltk.download('punkt_tab')"
 ```
 
 ---
 
-## 📈 Evaluation Metrics
-Because "Hot" days are inherently rare (imbalanced dataset), **Accuracy is a misleading metric**. We evaluate our models using:
-- **Recall**: Of all truly "Hot" days, how many did we successfully catch?
-- **Precision**: Of the days we predicted as "Hot", how many were actually "Hot"?
-- **F1-Score**: The harmonic mean of Precision and Recall, providing a single robust metric to beat the "always predict Cold" baseline.
+## 🚀 API Usage
 
-*Validation Strategy*: Strict chronological time-series split (e.g., Train: Jan-Sep 2023, Validation: Oct-Nov 2023, Test: Dec 2023) to prevent look-ahead bias and data leakage.
+### Local Execution
+```bash
+make run_api
+# Or directly with uv:
+uv run uvicorn api.fast:app --reload --port 8000
+```
+Interactive API docs are available at `http://127.0.0.1:8000/docs`.
+
+### Baseline Prediction (`/predict`)
+```bash
+curl -G "http://127.0.0.1:8000/predict" \
+  --data-urlencode "headline=Early IPO was a great success"
+```
+
+### Deep Learning Prediction (`/dl_predict`)
+```bash
+curl -X POST "http://127.0.0.1:8000/dl_predict" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "headline": "Apple stock falls ahead of earnings despite bullish outlook",
+    "summary": "Investors brace for heightened volatility ahead of quarterly report."
+  }'
+```
+**Example Response:**
+```json
+{
+  "prediction": 1,
+  "label": "hot",
+  "native_3class": "hot_falling",
+  "prob_hot": 0.8642,
+  "probabilities": {
+    "cold": 0.1358,
+    "hot_rising": 0.2104,
+    "hot_falling": 0.6538
+  }
+}
+```
+
+---
+
+## ☁️ Docker & GCP Cloud Run Deployment
+
+Configure your `.env` file:
+```bash
+GCP_PROJECT=wagon-bootcamp-506511
+GCP_REGION=europe-west1
+DOCKER_REPO_NAME=trading-heat-repo
+DOCKER_IMAGE_NAME=trading-heat-api
+DOCKER_LOCAL_PORT=8000
+GAR_MEMORY=4Gi
+```
+
+Deploy using Makefile automation:
+```bash
+# Set active GCP project
+make gcloud-set-project
+
+# Configure Artifact Registry authentication
+make docker_allow
+
+# Create the container repository (one-time setup)
+make docker_create_repo
+
+# Build linux/amd64 production image
+make docker_build
+
+# Push image to GCP Artifact Registry
+make docker_push
+
+# Deploy image to Google Cloud Run
+make docker_deploy
+```
+
+---
+
+## 📈 Evaluation Performance
+
+On a held-out test split of 30,000 stratified stock-days:
+- **3-Class Directional Classification**: Macro-F1 = `0.4672`.
+- **Binary Volatility Classification**:
+  - **Hot Recall**: **`83.6%`** 🔥
+  - **Cold Recall**: `29.2%`
+  - The model acts as a highly sensitive catalyst detector, successfully capturing and alerting on the vast majority of true volatile trading days.
 
 ---
 
 ## 🔮 Future Roadmap
-To elevate this project to production-grade quantitative finance standards, future iterations will include:
-1. **RAG (Retrieval-Augmented Generation)**: Integrate a vector database to retrieve historical analogs of current headlines, allowing an LLM to explain *why* a day is predicted as "Hot".
-2. **FinBERT Integration**: Replace TF-IDF/LSTM with domain-specific financial language models for superior sentiment and context understanding.
-3. **Alternative Data**: Incorporate trading volume spikes and broader market regime indicators (e.g., VIX, SPY trends) as additional features.
-4. **Backtesting Module**: Add a simulated portfolio performance chart showing returns of a strategy based on model predictions.
-5. **Real-Time Pipeline**: Build an automated pipeline that fetches daily news headlines and generates predictions for the next trading day.
+1. **RAG (Retrieval-Augmented Generation)**: Retrieve historical news analogs from a vector database to explain *why* a stock-day is flagged as "Hot".
+2. **Multimodal Market Features**: Combine FinBERT probability scores with pre-market volume spikes and implied volatility (VIX) regime indicators.
+3. **Strategy Backtesting**: Simulate volatility-breakout and straddle strategies driven by `prob_hot` signals.
 
 ---
 
-## 👥 Team
-**Le Wagon Data Science Bootcamp - Batch #2361** (October 2026)
-
-- **An Vo** ([An Vo](https://www.linkedin.com/in/an-vo-quant/))
+## 👥 Team & Credits
+**Le Wagon Data Science Bootcamp - Batch #2361**
+- **An Vo** ([LinkedIn](https://www.linkedin.com/in/an-vo-quant/))
 - **Laurenz Hammacher**
 - **Stanislav Korolev**
 
----
-
-## 📚 Credits
-- **Dataset**: FNSPID - Financial News and Stock Price Integration Dataset (Dong, Fan, & Peng, 2024)
-- **Paper**: [FNSPID: A Comprehensive Financial News Dataset in Time Series](https://arxiv.org/abs/2402.06698) (KDD 2024 Applied Data Science Track Paper)
-- **Bootcamp**: Le Wagon Data Science Bootcamp
-
----
-
-## 📄 License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-*⚠️ **Disclaimer**: This project is for educational and portfolio purposes only. It does not constitute financial advice. Do not use this model for real-world trading.*
+*Reference*: Dong, Z., Fan, C., & Peng, Z. (2024). *FNSPID: A Comprehensive Financial News Dataset in Time Series*. arXiv:2402.06698.
