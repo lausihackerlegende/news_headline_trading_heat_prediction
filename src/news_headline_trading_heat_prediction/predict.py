@@ -3,7 +3,7 @@ import pickle
 import pandas as pd
 from sklearn import set_config
 set_config(transform_output="pandas")
-from src.news_headline_trading_heat_prediction.pipeline import cleaning
+from news_headline_trading_heat_prediction.pipeline import cleaning
 
 MODEL_PATH ='models/lin_svc_pipeline.joblib'
 
